@@ -1,5 +1,10 @@
 unit form;
 
+//**
+// By Frédéric Hannes (http://www.scar-divi.com)
+// License: http://creativecommons.org/licenses/by/3.0/
+//**
+
 interface
 
 uses
