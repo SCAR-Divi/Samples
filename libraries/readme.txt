@@ -1,0 +1,1 @@
+All Delphi sample libraries should be compiled with Delphi XE2 or newer, support for versions before XE2 is not guaranteed.

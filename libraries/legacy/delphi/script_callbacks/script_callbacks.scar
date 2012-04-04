@@ -1,0 +1,7 @@
+{$L script_callbacks.dll}
+
+begin
+  WriteLn('Press the pause button!');  
+  Wait(100000);
+  Wait(2000);
+end.

@@ -41,6 +41,7 @@ function GetFunctionCount: Integer; stdcall;
 begin
   Result := 3;
 end;
+exports GetFunctionCount;
 
 function GetFunctionInfo(X: Integer; var ProcRef: Pointer; var ProcDef: PAnsiChar): Integer; stdcall;
 begin
@@ -61,11 +62,13 @@ begin
     else Exit(-1);
   end;
 end;
+exports GetFunctionInfo;
 
 function GetTypeCount: Integer; stdcall;
 begin
   Result := 1;
 end;
+exports GetTypeCount;
 
 function GetTypeInfo(X: Integer; var TypeName, TypeDef: AnsiString): Integer; stdcall;
 begin
@@ -79,10 +82,6 @@ begin
   end;
   Result := X;
 end;
-
-exports GetFunctionCount;
-exports GetFunctionInfo;
-exports GetTypeCount;
 exports GetTypeInfo;
 
 end.
