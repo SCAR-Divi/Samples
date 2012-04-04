@@ -9,9 +9,7 @@ library script_callbacks;
 
 uses
   FastShareMem in '..\FastShareMem.pas', // DO NOT REMOVE, !!MUST BE FIRST USES LINE!!
-  SCARLibSetup in '..\SCARLibSetup.pas', // DO NOT REMOVE
-  SysUtils,
-  Windows;
+  SCARLibSetup in '..\SCARLibSetup.pas'; // DO NOT REMOVE
 
 // Callbacks
 

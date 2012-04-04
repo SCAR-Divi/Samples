@@ -1,0 +1,6 @@
+{$L resource_management.dll}
+
+begin
+  SetMapString('TestKey', 'Hello World!');
+  WriteLn(GetMapString('TestKey'));
+end.

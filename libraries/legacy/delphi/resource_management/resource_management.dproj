@@ -3,7 +3,7 @@
 			<ProjectGuid>{F51ED3B2-1AD5-4840-9FFE-0EACE1963A15}</ProjectGuid>
 			<ProjectVersion>13.4</ProjectVersion>
 			<FrameworkType>VCL</FrameworkType>
-			<MainSource>script_callbacks.dpr</MainSource>
+			<MainSource>resource_management.dpr</MainSource>
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -134,7 +134,7 @@
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 					<Source>
-						<Source Name="MainSource">script_callbacks.dpr</Source>
+						<Source Name="MainSource">resource_management.dpr</Source>
 					</Source>
 					<Excluded_Packages>
 						<Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\9.0\Bpl\ecComnD16.bpl">EControl Common Library</Excluded_Packages>
