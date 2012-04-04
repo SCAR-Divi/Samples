@@ -64,6 +64,10 @@ var
   ClearClipboard: procedure;
   BitmapAssigned: function(const Bmp: Integer): Boolean;
   CreateBitmap: function(const Width, Height, Color: Integer): Integer;
+  GetBitmapSize: procedure(const Bmp: Integer; out Width, Height: Integer);
+  ResizeBitmap: function(const Bmp, Width, Height: Integer): Integer;
+  FreeBitmap: function(const Bmp: Integer): Boolean;
+  BitmapFromMem: function(const DC: HDC): Integer;
 
 implementation
 
@@ -170,7 +174,15 @@ begin
     else if Name = 'BITMAPASSIGNED' then
       BitmapAssigned := Funcs[Idx].Ptr
     else if Name = 'CREATEBITMAP' then
-      CreateBitmap := Funcs[Idx].Ptr;
+      CreateBitmap := Funcs[Idx].Ptr
+    else if Name = 'GETBITMAPSIZE' then
+      GetBitmapSize := Funcs[Idx].Ptr
+    else if Name = 'RESIZEBITMAP' then
+      ResizeBitmap := Funcs[Idx].Ptr
+    else if Name = 'FREEBITMAP' then
+      FreeBitmap := Funcs[Idx].Ptr
+    else if Name = 'BITMAPFROMMEM' then
+      BitmapFromMem := Funcs[Idx].Ptr;
   end;
 end;
 

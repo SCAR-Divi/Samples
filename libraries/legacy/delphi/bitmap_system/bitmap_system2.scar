@@ -1,0 +1,19 @@
+{$L bitmap_system.dll}
+
+var
+  Bmp, Bmp2: Integer;
+
+begin
+  Bmp := BitmapFromJPEG(ScriptPath + 'hehe.jpg');  
+  try        
+    DebugBitmap(Bmp);    
+    Bmp2 := CreateMirroredBitmap(Bmp);       
+    try
+      BitmapToPNG(Bmp2, ScriptPath + 'hehe.png');
+    finally
+      FreeBitmap(Bmp2);
+    end; 
+  finally
+    FreeBitmap(Bmp);
+  end;
+end.

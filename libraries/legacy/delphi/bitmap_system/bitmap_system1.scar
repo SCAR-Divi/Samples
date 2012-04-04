@@ -1,0 +1,15 @@
+{$L bitmap_system.dll}
+
+var
+  Bmp: Integer;
+
+begin
+  Bmp := CreateBitmap(500, 500, 0);  
+  try        
+    CopyClientToBitmap(Bmp, 0, 0, 499, 499);
+    DrawLine(Bmp);
+    DebugBitmap(Bmp);  
+  finally
+    FreeBitmap(Bmp);
+  end;
+end.
