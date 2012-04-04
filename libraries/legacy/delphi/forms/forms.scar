@@ -1,0 +1,10 @@
+{$L forms.dll}
+
+begin
+  CreateSmallForm;
+  try
+    SmallFormShowModal;
+  finally
+    FreeSmallForm;
+  end;
+end.
