@@ -1,0 +1,11 @@
+{$L basic_exports.dll}
+
+var
+  P1, P2: TPoint3D;
+
+begin
+  WriteHello;
+  P1 := Point3D(1, 1, 1);
+  P2 := Point3D(2, 2, 2);
+  WriteLn(Distance3D(P1, P2)); 
+end.
