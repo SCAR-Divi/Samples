@@ -27,7 +27,7 @@ end;
 
 function SmallFormShowModal: TModalResult; stdcall;
 begin
-  REsult := Form.ShowModal;
+  Result := Form.ShowModal;
 end;
 
 procedure FreeSmallForm; stdcall;
