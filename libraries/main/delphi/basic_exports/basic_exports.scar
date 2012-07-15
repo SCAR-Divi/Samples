@@ -1,0 +1,5 @@
+{$L basic_exports.dll}
+
+begin
+  HelloWorld;
+end.
