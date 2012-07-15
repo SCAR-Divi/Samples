@@ -52,6 +52,10 @@ const
     (Ref: @BmpToPng; Def: 'procedure BmpToPng(const BmpPath, PngPath: string);'; Conv: ccStdCall)
   );
 
+  TypeExports: array[0..0] of TTypeExport = (
+    (Name: 'T3DPoint'; Def: 'record X, Y, Z: Integer; end;')
+  );
+
 procedure OnLoadLib(const SCARExports: PExports); stdcall;
 begin
   Exp := SCARExports; // Do NOT remove this line!
@@ -86,6 +90,27 @@ begin
     Result := -1;
 end;
 
+// Type exports
+// Do NOT change this!
+function OnGetTypeCount: Integer; stdcall;
+begin
+  Result := High(TypeExports) - Low(TypeExports) + 1;
+end;
+
+function OnGetTypeInfo(const Idx: Integer; out ProcAddr: Pointer; out TypeName, TypeDef: PAnsiChar): Integer; stdcall;
+var
+  TypeExp: TTypeExport;
+begin
+  if (Idx >= Low(TypeExports)) and (Idx <= High(TypeExports)) then
+  begin
+    TypeExp := TypeExports[Idx + Low(TypeExports)];
+    TypeName := PAnsiChar(TypeExp.Name);
+    TypeDef := PAnsiChar(TypeExp.Def);
+    Result := Idx;
+  end else
+    Result := -1;
+end;
+
 // Library architecture
 // Do NOT change this!
 const
@@ -101,6 +126,8 @@ exports OnLoadLib;
 exports OnUnloadLib;
 exports OnGetFuncCount;
 exports OnGetFuncInfo;
+exports OnGetTypeCount;
+exports OnGetTypeInfo;
 exports LibArch;
 
 end.

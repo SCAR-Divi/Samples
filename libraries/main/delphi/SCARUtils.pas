@@ -16,6 +16,10 @@ type
     Conv: TCallConv;
   end;
 
+  TTypeExport = record
+    Name, Def: AnsiString;
+  end;
+
   PSCARBmpData = ^TSCARBmpData;
   TSCARBmpData = record
     B, G, R, A: Byte;
