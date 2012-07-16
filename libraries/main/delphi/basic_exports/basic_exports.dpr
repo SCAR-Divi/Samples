@@ -8,8 +8,8 @@ library basic_exports;
 {$R *.res}
 
 uses
-  FastShareMem in '..\FastShareMem.pas',
-  SCARLibSetup in '..\SCARLibSetup.pas',
+  FastShareMem in '..\FastShareMem.pas', // DO NOT REMOVE, !!MUST BE FIRST USES LINE!!
+  SCARLibSetup in '..\SCARLibSetup.pas', // DO NOT REMOVE
   SCARUtils in '..\SCARUtils.pas',
   SCARApi in '..\SCARApi.pas',
   SysUtils;
@@ -67,8 +67,8 @@ begin
   // Called when the library is unloaded
 end;
 
-// Function exports
-// Do NOT change this!
+// - Function exports
+// Do NOT change this! (unless you're not exporting functions, then you can remove this part)
 function OnGetFuncCount: Integer; stdcall;
 begin
   Result := High(FunctionExports) - Low(FunctionExports) + 1;
@@ -90,8 +90,8 @@ begin
     Result := -1;
 end;
 
-// Type exports
-// Do NOT change this!
+// - Type exports
+// Do NOT change this! (unless you're not exporting types, then you can remove this part)
 function OnGetTypeCount: Integer; stdcall;
 begin
   Result := High(TypeExports) - Low(TypeExports) + 1;
@@ -111,7 +111,7 @@ begin
     Result := -1;
 end;
 
-// Library architecture
+// - Library architecture
 // Do NOT change this!
 const
   LIBRARY_ARCHITECTURE_LEGACY = 1;

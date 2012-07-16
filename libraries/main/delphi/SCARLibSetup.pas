@@ -23,6 +23,24 @@ type
     Version: function: Integer; stdcall;
     DebugLn: procedure(const Str: PWideChar); stdcall;
     DebugLnA: procedure(const Str: PAnsiChar); stdcall;
+    GetClient: function: Pointer; stdcall;
+    SetClient: function(const Client: Pointer): Pointer; stdcall;
+    AppPath: function: string; stdcall;
+    AppPathA: function: AnsiString; stdcall;
+    ScriptPath: function: string; stdcall;
+    ScriptPathA: function: AnsiString; stdcall;
+    ScriptFileName: function: string; stdcall;
+    ScriptFileNameA: function: AnsiString; stdcall;
+    IncludesPath: function: string; stdcall;
+    IncludesPathA: function: AnsiString; stdcall;
+    FontsPath: function: string; stdcall;
+    FontsPathA: function: AnsiString; stdcall;
+    LogsPath: function: string; stdcall;
+    LogsPathA: function: AnsiString; stdcall;
+    WorkspacePath: function: string; stdcall;
+    WorkspacePathA: function: AnsiString; stdcall;
+    ScreenPath: function: string; stdcall;
+    ScreenPathA: function: AnsiString; stdcall;
     TSCARBitmap_Create: function: Pointer; stdcall;
     TSCARBitmap_Free: procedure(const Bmp: Pointer); stdcall;
     TSCARBitmap_SetSize: procedure(const Bmp: Pointer; const NewWidth, NewHeight: Integer); stdcall;
@@ -64,6 +82,17 @@ type
     TSCARBitmap_SetPixels: procedure(const Bmp: Pointer; const X, Y, Color: Integer); stdcall;
     TSCARBitmap_GetAlphaBlend: function(const Bmp: Pointer): Boolean; stdcall;
     TSCARBitmap_SetAlphaBlend: procedure(const Bmp: Pointer; const AlphaBlend: Boolean); stdcall;
+    TSCARLibraryClient_Create: function: Pointer; stdcall;
+    TSCARLibraryClient_GetCallbacks: function(const Client: Pointer): PLibClientCallbacks; stdcall;
+    TSCARClient_GetInputArea: function(const Client: Pointer): TBox; stdcall;
+    TSCARClient_SetInputArea: procedure(const Client: Pointer; const Box: TBox); stdcall;
+    TSCARClient_GetImageArea: function(const Client: Pointer): TBox; stdcall;
+    TSCARClient_SetImageArea: procedure(const Client: Pointer; const Box: TBox); stdcall;
+    TSCARClient_Activate: procedure(const Client: Pointer); stdcall;
+    TSCARClient_Clone: function(const Client: Pointer): Pointer; stdcall;
+    TSCARClient_Capture: function(const Client: Pointer): Pointer; stdcall;
+    TSCARClient_CaptureEx: function(const Client: Pointer; const XS, YS, XE, YE: Integer): Pointer; stdcall;
+    TSCARClient_Free: procedure(const Client: Pointer); stdcall;
   end;
 
 var

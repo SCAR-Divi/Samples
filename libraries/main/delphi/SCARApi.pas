@@ -5,6 +5,11 @@ interface
 //**
 // By Frédéric Hannes (http://www.scar-divi.com)
 // License: http://creativecommons.org/licenses/by/3.0/
+// -
+// Wrappers for the SCAR export API, if you know what you're doing
+// it might be better to use the export API directly. The export
+// API is located in SCARLibSetup.pas. Not all exported functions
+// wrapped in this file either.
 //**
 
 uses
@@ -110,13 +115,63 @@ begin
     Exp^.DebugLnA(PAnsiChar(Str));
 end;
 
-{ TSCARBitmapWrapper }
-
-constructor TSCARBitmapWrapper.Create(const BmpObj: Pointer);
+function SCAR_AppPath: string;
 begin
-  FOwnsObject := False;
-  FBmpObj := BmpObj;
+  Result := '';
+  if (Exp <> nil) and (@Exp^.AppPath <> nil) then
+    Result := Exp^.AppPath;
 end;
+
+function SCAR_ScriptPath: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.ScriptPath <> nil) then
+    Result := Exp^.ScriptPath;
+end;
+
+function SCAR_ScriptFileName: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.ScriptFileName <> nil) then
+    Result := Exp^.ScriptFileName;
+end;
+
+function SCAR_IncludesPath: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.IncludesPath <> nil) then
+    Result := Exp^.IncludesPath;
+end;
+
+function SCAR_FontsPath: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.FontsPath <> nil) then
+    Result := Exp^.FontsPath;
+end;
+
+function SCAR_LogsPath: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.LogsPath <> nil) then
+    Result := Exp^.LogsPath;
+end;
+
+function SCAR_WorkspacePath: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.WorkspacePath <> nil) then
+    Result := Exp^.WorkspacePath;
+end;
+
+function SCAR_ScreenPath: string;
+begin
+  Result := '';
+  if (Exp <> nil) and (@Exp^.ScreenPath <> nil) then
+    Result := Exp^.ScreenPath;
+end;
+
+{ TSCARBitmapWrapper }
 
 procedure TSCARBitmapWrapper.Assign(const Obj: TObject);
 var
@@ -160,6 +215,12 @@ begin
   FOwnsObject := False;
   if (Exp <> nil) and (@Exp^.TSCARBitmap_Create <> nil) then
     FBmpObj := Exp^.TSCARBitmap_Create;
+end;
+
+constructor TSCARBitmapWrapper.Create(const BmpObj: Pointer);
+begin
+  FOwnsObject := False;
+  FBmpObj := BmpObj;
 end;
 
 destructor TSCARBitmapWrapper.Destroy;
