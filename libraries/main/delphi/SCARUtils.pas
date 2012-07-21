@@ -33,22 +33,25 @@ type
 
   PLibClientCallbacks = ^TLibClientCallbacks;
   TLibClientCallbacks = record
-    SetCursorPos: procedure(const X, Y: Integer); stdcall;
-    GetCursorPos: procedure(out X, Y: Integer); stdcall;
-    MouseBtnDown: procedure(const Button: TMouseButton); stdcall;
-    MouseBtnUp: procedure(const Button: TMouseButton); stdcall;
-    GetMouseBtnState: function(const Btn: TMouseButton): Boolean; stdcall;
-    VKeyDown: procedure(const VKey: Byte); stdcall;
-    VKeyUp: procedure(const VKey: Byte); stdcall;
-    KeyDown: procedure(const Key: WideChar); stdcall;
-    KeyUp: procedure(const Key: WideChar); stdcall;
-    GetKeyState: function(const VKey: Byte): Boolean; stdcall;
-    GetCurrentKeyState: function(const VKey: Byte): Boolean; stdcall;
-    GetToggleKeyState: function(const VKey: Byte): Boolean; stdcall;
-    Capture: procedure(const DC: HDC; const XS, YS, XE, YE, DestX, DestY: Integer); stdcall;
-    GetPixel: function(const X, Y: Integer): Integer; stdcall;
-    Activate: procedure; stdcall;
-    Clone: procedure(const Callbacks: PLibClientCallbacks); stdcall;
+    SetCursorPos: procedure(const Client: Pointer; const X, Y: Integer); stdcall;
+    GetCursorPos: procedure(const Client: Pointer; out X, Y: Integer); stdcall;
+    MouseBtnDown: procedure(const Client: Pointer; const Button: TMouseButton); stdcall;
+    MouseBtnUp: procedure(const Client: Pointer; const Button: TMouseButton); stdcall;
+    GetMouseBtnState: function(const Client: Pointer; const Btn: TMouseButton): Boolean; stdcall;
+    VKeyDown: procedure(const Client: Pointer; const VKey: Byte); stdcall;
+    VKeyUp: procedure(const Client: Pointer; const VKey: Byte); stdcall;
+    KeyDown: procedure(const Client: Pointer; const Key: WideChar); stdcall;
+    KeyUp: procedure(const Client: Pointer; const Key: WideChar); stdcall;
+    GetKeyState: function(const Client: Pointer; const VKey: Byte): Boolean; stdcall;
+    GetCurrentKeyState: function(const Client: Pointer; const VKey: Byte): Boolean; stdcall;
+    GetToggleKeyState: function(const Client: Pointer; const VKey: Byte): Boolean; stdcall;
+    Capture: procedure(const Client: Pointer; const DC: HDC; const XS, YS, XE, YE, DestX, DestY: Integer); stdcall;
+    GetPixel: function(const Client: Pointer; const X, Y: Integer): Integer; stdcall;
+    Activate: procedure(const Client: Pointer); stdcall;
+    Clone: function(const Client: Pointer): Pointer; stdcall;
+    Destroy: procedure(const Client: Pointer); stdcall;
+    TypeText: procedure(const Client: Pointer; const Text: string; const PressIval, PressIvalRnd, ModIval, ModIvalRnd,
+      CharIval, CharIvalRnd: Integer; const UseNumpad: Boolean); stdcall;
   end;
 
   PBox = ^TBox;
