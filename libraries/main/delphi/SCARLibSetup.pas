@@ -95,6 +95,10 @@ type
     TSCARClient_Capture: function(const Client: Pointer): Pointer; stdcall;
     TSCARClient_CaptureEx: function(const Client: Pointer; const XS, YS, XE, YE: Integer): Pointer; stdcall;
     TSCARClient_Free: procedure(const Client: Pointer); stdcall;
+    // 3.37
+    TSCARBitmap_RotateEx: procedure(const Bmp: Pointer; const Angle: Extended; const Resize: Boolean); stdcall;
+    TSCARBitmap_Skew: procedure(const Bmp: Pointer; const Horiz, Vert: Single); stdcall;
+    TSCARBitmap_SkewEx: procedure(const Bmp: Pointer; const Horiz, Vert: Single; const Resize: Boolean); stdcall;
   end;
 
 var

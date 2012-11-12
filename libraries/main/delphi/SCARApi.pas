@@ -68,6 +68,9 @@ type
 
     procedure Flip(const Horizontal: Boolean);
     procedure Rotate(const Angle: Extended);
+    procedure RotateEx(const Angle: Extended; const Resize: Boolean);
+    procedure Skew(const Horiz, Vert: Single);
+    procedure SkewEx(const Horiz, Vert: Single; const Resize: Boolean);
 
     procedure SetAlphaMask(const Mask: TSCARBitmapWrapper); overload;
     procedure SetAlphaMask(const Mask: Pointer); overload;
@@ -382,6 +385,12 @@ begin
     Exp^.TSCARBitmap_Rotate(FBmpObj, Angle);
 end;
 
+procedure TSCARBitmapWrapper.RotateEx(const Angle: Extended; const Resize: Boolean);
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_RotateEx <> nil) then
+    Exp^.TSCARBitmap_RotateEx(FBmpObj, Angle, Resize);
+end;
+
 function TSCARBitmapWrapper.SaveToBmp(const Path: WideString): Boolean;
 begin
   Result := False;
@@ -482,6 +491,18 @@ procedure TSCARBitmapWrapper.SetWidth(const Value: Integer);
 begin
   if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
     Exp^.TSCARBitmap_SetWidth(FBmpObj, Value);
+end;
+
+procedure TSCARBitmapWrapper.Skew(const Horiz, Vert: Single);
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Skew <> nil) then
+    Exp^.TSCARBitmap_Skew(FBmpObj, Horiz, Vert);
+end;
+
+procedure TSCARBitmapWrapper.SkewEx(const Horiz, Vert: Single; const Resize: Boolean);
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SkewEx <> nil) then
+    Exp^.TSCARBitmap_SkewEx(FBmpObj, Horiz, Vert, Resize);
 end;
 
 end.
