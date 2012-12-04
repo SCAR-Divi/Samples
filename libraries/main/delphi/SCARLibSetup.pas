@@ -84,8 +84,8 @@ type
     TSCARBitmap_SetAlphaBlend: procedure(const Bmp: Pointer; const AlphaBlend: Boolean); stdcall;
     TSCARLibraryClient_Create: function: Pointer; stdcall;
     TSCARLibraryClient_GetCallbacks: function(const Client: Pointer): PLibClientCallbacks; stdcall;
-    TSCARLibraryClient_GetData: function(const Client: TSCARClient): Pointer; stdcall;
-    TSCARLibraryClient_SetData: procedure(const Client: TSCARClient; const Data: Pointer); stdcall;
+    TSCARLibraryClient_GetData: function(const Client: Pointer): Pointer; stdcall;
+    TSCARLibraryClient_SetData: procedure(const Client: Pointer; const Data: Pointer); stdcall;
     TSCARClient_GetInputArea: function(const Client: Pointer): TBox; stdcall;
     TSCARClient_SetInputArea: procedure(const Client: Pointer; const Box: TBox); stdcall;
     TSCARClient_GetImageArea: function(const Client: Pointer): TBox; stdcall;
