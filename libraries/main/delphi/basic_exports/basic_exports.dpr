@@ -16,7 +16,7 @@ uses
 
 procedure HelloWorld; stdcall;
 begin
-  WriteLn('Hello World!');
+  SCAR_DebugLn('Hello World!');
 end;
 
 procedure SaveBitmapToPng(const Bmp: Pointer; const Path: string); stdcall;
@@ -97,7 +97,7 @@ begin
   Result := High(TypeExports) - Low(TypeExports) + 1;
 end;
 
-function OnGetTypeInfo(const Idx: Integer; out ProcAddr: Pointer; out TypeName, TypeDef: PAnsiChar): Integer; stdcall;
+function OnGetTypeInfo(const Idx: Integer; out TypeName, TypeDef: PAnsiChar): Integer; stdcall;
 var
   TypeExp: TTypeExport;
 begin
