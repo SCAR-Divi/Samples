@@ -1,0 +1,9 @@
+*.dcu
+*.bak
+*.~*~
+*.local
+*.identcache
+__history
+*.drc
+*.map
+*.tvsconfig

@@ -40,6 +40,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UnitSearchPath>..\..\..\openapi\src;..\..\..\openapi\lib\pcre;..\..\..\openapi\lib\zlib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_Define>EXPORT_FUNCTIONS;EXPORT_TYPES;$(DCC_Define)</DCC_Define>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<VerInfo_Locale>2067</VerInfo_Locale>
@@ -72,7 +73,6 @@
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-			<Manifest_File>None</Manifest_File>
 			<VerInfo_Locale>1033</VerInfo_Locale>
 			<DCC_RemoteDebug>false</DCC_RemoteDebug>
 		</PropertyGroup>
@@ -87,9 +87,10 @@
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="..\FastShareMem.pas"/>
-			<DCCReference Include="..\SCARLibSetup.pas"/>
-			<DCCReference Include="..\SCARUtils.pas"/>
-			<DCCReference Include="..\SCARApi.pas"/>
+			<DCCReference Include="..\LibAPI.Setup.pas"/>
+			<DCCReference Include="..\LibAPI.Types.pas"/>
+			<DCCReference Include="..\LibAPI.Wrapper.pas"/>
+			<DCCReference Include="MyExports.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
