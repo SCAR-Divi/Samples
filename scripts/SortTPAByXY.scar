@@ -1,0 +1,10 @@
+var
+  TPA: TPointArray;
+
+begin
+  TPA := [Point(0, 8), Point(2, 6), Point(-5, -10), Point(1, 2), Point(1, 10)];
+  SortTPAByX(TPA);
+  WriteLn(TPAToStr(TPA));                     
+  SortTPAByY(TPA);
+  WriteLn(TPAToStr(TPA));
+end.

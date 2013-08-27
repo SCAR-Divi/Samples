@@ -1,0 +1,700 @@
+program Bejeweled;
+
+type
+  ScoreNumber = record
+    x, y: Integer;
+    Number: Integer;
+  end;
+  ByteArray7 = array[0..7] of Byte;
+
+var
+  Form1: TForm;
+  Timer1: TTimer;
+  Lauk, Deled: array[1..8] of array[1..8] of Byte;
+  UpLauk: array[1..8] of Byte;
+  Bmps: array[1..7] of TSCARBitmap;
+  GCanvas: array[1..7] of TCanvas;
+  SelX, SelY: Integer;
+  Scores: array of ScoreNumber;
+  Score: Integer;
+  TempBMP: TSCARBitmap;
+  LengthScores: ByteArray7;
+  i: Integer;
+
+procedure DrawLauk(x1: Integer; y1: Integer; x2: Integer; y2: Integer);
+var
+  x, y: Integer;
+  Canvas: TCanvas;
+begin
+  Canvas := TempBMP.Canvas;
+  Canvas.Brush.Style := bsSolid;
+  Canvas.Brush.Color := clBlack;
+  Canvas.Pen.Color := clBlack;
+  Canvas.Rectangle(0, 0, Form1.Width, Form1.Height);
+  for y := y1 to y2 do
+    for x := x1 to x2 do
+    begin
+      if (Lauk[x][y] >= 1) then
+        //Canvas.Draw(x*32, y*32, Bmps[Lauk[x,y]]);
+        CopyCanvas(GCanvas[Lauk[x][y]], Canvas, 0, 0, 32, 32, x * 32, y * 32, x
+          * 32 + 32, y * 32 + 32);
+    end;
+  if (SelX > -1) and (SelY > -1) then
+  begin
+    x := SelX;
+    y := SelY;
+    Canvas.Pen.Color := clBlack;
+    Canvas.Brush.Style := bsClear;
+    Canvas.Rectangle(x * 32, y * 32, x * 32 + 31, y * 32 + 31);
+    Canvas.Rectangle(x * 32 + 2, y * 32 + 2, x * 32 + 29, y * 32 + 29);
+    Canvas.Pen.Color := clRed;
+    Canvas.Rectangle(x * 32 + 1, y * 32 + 1, x * 32 + 30, y * 32 + 30);
+  end;
+  for x := 0 to GetArrayLength(Scores) - 1 do
+  begin
+    Canvas.Brush.Style := bsClear;
+    Canvas.Font.Size := 14;
+    Canvas.Font.Name := 'Verdana';
+    Canvas.Font.Color := clBlack;
+    Canvas.TextOut(Scores[x].x * 32 + 1, Scores[x].y * 32 + 1,
+      IntToStr(Scores[x].Number));
+    Canvas.Font.Color := clWhite;
+    Canvas.TextOut(Scores[x].x * 32, Scores[x].y * 32,
+      IntToStr(Scores[x].Number));
+  end;
+  Canvas.Brush.Style := bsClear;
+  Canvas.Font.Size := 12;
+  Canvas.Font.Name := 'Verdana';
+  Canvas.Font.Color := clWhite;
+  Canvas.TextOut(32, 293, 'Score: ' + IntToStr(Score * 10));
+  Canvas.Pen.Color := clWhite;
+  Canvas.Rectangle(30, 30, 290, 290);
+  if (x1 <> 1) or (x2 <> 8) or (y1 <> 1) or (y2 <> 8) then
+  begin
+    //Form1.Canvas.CopyRect(Rect(x1*32, y1*32, x2*32+32, y2*32+32), TempBMP.Canvas, Rect(x1*32, y1*32, x2*32+32, y2*32+32));
+    CopyCanvas(Canvas, Form1.Canvas, x1 * 32, y1 * 32, x2 * 32 + 32, y2 * 32 +
+      32, x1 * 32, y1 * 32, x2 * 32 + 32, y2 * 32 + 32);
+  end else
+    //Form1.Canvas.Draw(0, 0, TempBMP);
+    CopyCanvas(Canvas, Form1.Canvas, 0, 0, Form1.Width, Form1.Height, 0, 0,
+      Form1.Width, Form1.Height);
+end;
+
+procedure InitializeLauk;
+var
+  x, y: Integer;
+begin
+  for x := 1 to 8 do
+    for y := 1 to 8 do
+      Lauk[x][y] := Random(7) + 1;
+end;
+
+procedure FormPaint(Sender: TObject);
+begin
+  DrawLauk(1, 1, 8, 8);
+end;
+
+function CanSwap(x1, y1, x2, y2: Integer): Boolean;
+begin
+  Result := False;
+  if (X1 >= 1) and (X1 <= 8) and (Y1 >= 1) and (Y1 <= 8) then
+    if (X2 >= 1) and (X2 <= 8) and (Y2 >= 1) and (Y2 <= 8) then
+    begin
+      Result := ((x1 = x2) and (abs(y1 - y2) = 1)) or
+        ((y1 = y2) and (abs(x1 - x2) = 1));
+    end;
+end;
+
+procedure Swap(x1, y1, x2, y2: Integer);
+var
+  n, f: Integer;
+begin
+  //animate it
+  Form1.Canvas.Brush.Style := bsSolid;
+  Form1.Canvas.Brush.Color := clBlack;
+  Form1.Canvas.Pen.Color := clBlack;
+  for f := 0 to 15 do
+  begin
+    Form1.Canvas.Rectangle(x1 * 32, y1 * 32, x1 * 32 + 31, y1 * 32 + 31);
+    Form1.Canvas.Rectangle(x2 * 32, y2 * 32, x2 * 32 + 31, y2 * 32 + 31);
+    //Form1.Canvas.Draw(x2*32 + (x1-x2) * f * 2, y2*32 + (y1-y2) * f * 2, Bmps[Lauk[x2, y2]]);
+    CopyCanvas(GCanvas[Lauk[x2][y2]], Form1.Canvas, 0, 0, 32, 32, x2 * 32 + (x1
+      - x2) * f * 2, y2 * 32 + (y1 - y2) * f * 2, x2 * 32 + (x1 - x2) * f * 2 +
+      32, y2 * 32 + (y1 - y2) * f * 2 + 32);
+    //Form1.Canvas.Draw(x1*32 + (x2-x1) * f * 2, y1*32 + (y2-y1) * f * 2, Bmps[Lauk[x1, y1]]);
+    CopyCanvas(GCanvas[Lauk[x1][y1]], Form1.Canvas, 0, 0, 32, 32, x1 * 32 + (x2
+      - x1) * f * 2, y1 * 32 + (y2 - y1) * f * 2, x1 * 32 + (x2 - x1) * f * 2 +
+      32, y1 * 32 + (y2 - y1) * f * 2 + 32);
+    Sleep(10);
+  end;
+  n := Lauk[x1][y1];
+  Lauk[x1][y1] := Lauk[x2][y2];
+  Lauk[x2][y2] := n;
+end;
+
+function GetLauk(x, y: Integer): Integer;
+begin
+  Result := -1;
+  if (x >= 1) and (x <= 8) and (y >= 1) and (y <= 8) then
+    Result := Lauk[x][y];
+end;
+
+function CheckLaukSq(c: Char; var last: Integer; x, y: Integer): Boolean;
+begin
+  Result := True;
+  if (c = '1') then
+  begin
+    Result := ((last = -1) or (Lauk[x][y] = last));
+    last := Lauk[x][y];
+  end;
+end;
+
+function FindVShapeInLauk(s: string; x, y: Integer): Boolean;
+var
+  last: Integer;
+begin
+  Result := True;
+  last := -1;
+  Result := Result and CheckLaukSq(s[1], last, x, y);
+  Result := Result and CheckLaukSq(s[2], last, x + 1, y);
+  Result := Result and CheckLaukSq(s[3], last, x, y + 1);
+  Result := Result and CheckLaukSq(s[4], last, x + 1, y + 1);
+  Result := Result and CheckLaukSq(s[5], last, x, y + 2);
+  Result := Result and CheckLaukSq(s[6], last, x + 1, y + 2);
+end;
+
+function FindHShapeInLauk(s: string; x, y: Integer): Boolean;
+var
+  last: Integer;
+begin
+  Result := True;
+  last := -1;
+  Result := Result and CheckLaukSq(s[1], last, x, y);
+  Result := Result and CheckLaukSq(s[2], last, x + 1, y);
+  Result := Result and CheckLaukSq(s[3], last, x + 2, y);
+  Result := Result and CheckLaukSq(s[4], last, x, y + 1);
+  Result := Result and CheckLaukSq(s[5], last, x + 1, y + 1);
+  Result := Result and CheckLaukSq(s[6], last, x + 2, y + 1);
+end;
+
+function FindHHShapeInLauk(s: string; x, y: Integer): Boolean;
+var
+  last: Integer;
+begin
+  Result := True;
+  last := -1;
+  Result := Result and CheckLaukSq(s[1], last, x, y);
+  Result := Result and CheckLaukSq(s[2], last, x + 1, y);
+  Result := Result and CheckLaukSq(s[3], last, x + 2, y);
+  Result := Result and CheckLaukSq(s[4], last, x + 3, y);
+end;
+
+function FindVVShapeInLauk(s: string; x, y: Integer): Boolean;
+var
+  last: Integer;
+begin
+  Result := True;
+  last := -1;
+  Result := Result and CheckLaukSq(s[1], last, x, y);
+  Result := Result and CheckLaukSq(s[2], last, x, y + 1);
+  Result := Result and CheckLaukSq(s[3], last, x, y + 2);
+  Result := Result and CheckLaukSq(s[4], last, x, y + 3);
+end;
+
+function HaveMoves: Boolean;
+var
+  x, y: Integer;
+begin
+  Result := False;
+  for x := 1 to 7 do
+    for y := 1 to 6 do
+    begin
+      Result := Result or FindVShapeInLauk('011010', x, y);
+      Result := Result or FindVShapeInLauk('100101', x, y);
+      Result := Result or FindVShapeInLauk('011001', x, y);
+      Result := Result or FindVShapeInLauk('100110', x, y);
+      Result := Result or FindVShapeInLauk('010110', x, y);
+      Result := Result or FindVShapeInLauk('101001', x, y);
+    end;
+  for x := 1 to 6 do
+    for y := 1 to 7 do
+    begin
+      Result := Result or FindHShapeInLauk('011100', x, y);
+      Result := Result or FindHShapeInLauk('100011', x, y);
+      Result := Result or FindHShapeInLauk('110001', x, y);
+      Result := Result or FindHShapeInLauk('001110', x, y);
+      Result := Result or FindHShapeInLauk('101010', x, y);
+      Result := Result or FindHShapeInLauk('010101', x, y);
+    end;
+  for x := 1 to 5 do
+    for y := 1 to 8 do
+    begin
+      Result := Result or FindHHShapeInLauk('1011', x, y);
+      Result := Result or FindHHShapeInLauk('1101', x, y);
+    end;
+  for x := 1 to 8 do
+    for y := 1 to 5 do
+    begin
+      Result := Result or FindVVShapeInLauk('1011', x, y);
+      Result := Result or FindVVShapeInLauk('1101', x, y);
+    end;
+end;
+
+function FullLines: Boolean;
+var
+  n, last, x, y: Integer;
+begin
+  Result := False;
+  for y := 1 to 8 do
+  begin
+    n := 0;
+    last := 0;
+    for x := 1 to 8 do
+      if (Lauk[x][y] = last) then
+      begin
+        n := n + 1;
+        if (n = 3) then
+          Result := True;
+      end else
+      begin
+        n := 1;
+        last := Lauk[x][y];
+      end;
+  end;
+  for x := 1 to 8 do
+  begin
+    last := 0;
+    n := 0;
+    for y := 1 to 8 do
+      if (Lauk[x][y] = last) then
+      begin
+        n := n + 1;
+        if (n = 3) then
+          Result := True;
+      end else
+      begin
+        n := 1;
+        last := Lauk[x][y];
+      end;
+  end;
+end;
+
+function DeleteLine(x, y, xv, yv, num: Integer): Integer;
+begin
+  Result := LengthScores[num];
+  while (num > 0) do
+  begin
+    Deled[x][y] := 1;
+    x := x + xv;
+    y := y + yv;
+    num := num - 1;
+  end;
+end;
+
+procedure DelLine(var Score, Base: Integer; x, y, xv, yv, n: Integer);
+var
+  k: Integer;
+begin
+  k := DeleteLine(x, y, xv, yv, n);
+  SetArrayLength(Scores, GetArrayLength(Scores) + 1);
+  Scores[GetArrayLength(Scores) - 1].x := x + xv;
+  Scores[GetArrayLength(Scores) - 1].y := y + yv;
+  Scores[GetArrayLength(Scores) - 1].Number := (base + k) * 10;
+  Score := Score + base + k;
+  base := base + 1;
+end;
+
+function DeleteLines(base: Integer): Integer;
+var
+  n, last, x, y: Integer;
+begin
+  for x := 1 to 8 do
+    for y := 1 to 8 do
+      Deled[x][y] := 0;
+  Result := 0;
+  for y := 1 to 8 do
+  begin
+    n := 0;
+    last := 0;
+    for x := 1 to 8 do
+      if (Lauk[x][y] = last) then
+        n := n + 1
+      else begin
+        if (n >= 3) then
+          DelLine(Result, base, x - 1, y, -1, 0, n);
+        n := 1;
+        last := Lauk[x][y];
+      end;
+    if (n >= 3) then
+      DelLine(Result, base, 8, y, -1, 0, n);
+  end;
+  for x := 1 to 8 do
+  begin
+    last := 0;
+    n := 0;
+    for y := 1 to 8 do
+      if (Lauk[x][y] = last) then
+        n := n + 1
+      else begin
+        if (n >= 3) then
+          DelLine(Result, base, x, y - 1, 0, -1, n);
+        n := 1;
+        last := Lauk[x][y];
+      end;
+    if (n >= 3) then
+      DelLine(Result, base, x, 8, 0, -1, n);
+  end;
+  for x := 1 to 8 do
+    for y := 1 to 8 do
+      if (Deled[x][y] = 1) then
+        Lauk[x][y] := 0;
+end;
+
+function CanDropLines: Boolean;
+var
+  x, y: Integer;
+begin
+  Result := False;
+  for x := 1 to 8 do
+    for y := 1 to 8 do
+      Result := Result or (Lauk[x][y] <= 0);
+end;
+
+procedure GenerateUpperLine;
+var
+  f: Integer;
+begin
+  for f := 1 to 8 do
+    UpLauk[f] := Random(7) + 1;
+end;
+
+procedure DropLine;
+var
+  x, y, f: Integer;
+  FLauk: array[1..8] of array[0..8] of Byte;
+begin
+  GenerateUpperLine;
+  for x := 1 to 8 do
+    for y := 1 to 8 do
+      FLauk[x][y] := 0;
+
+  for y := 8 downto 1 do
+    for x := 1 to 8 do
+      if (Lauk[x][y] < 1) or (FLauk[x][y] = 1) then
+        FLauk[x][y - 1] := 1;
+
+  //animate it
+  Form1.Canvas.Brush.Style := bsSolid;
+  Form1.Canvas.Brush.Color := clBlack;
+  Form1.Canvas.Pen.Color := clBlack;
+  for f := 0 to 7 do
+  begin
+    for y := 8 downto 1 do
+      for x := 1 to 8 do
+        if (FLauk[x][y] = 1) then
+          if (Lauk[x][y] > 0) then
+          begin
+            Form1.Canvas.Rectangle(x * 32, y * 32 + f * 4 - 3, x * 32 + 31, y *
+              32 + f * 4);
+            //Form1.Canvas.Draw(x*32, y*32 + f*2, Bmps[Lauk[x, y]]);
+            CopyCanvas(GCanvas[Lauk[x][y]], Form1.Canvas, 0, 0, 32, 32, x * 32, y
+              * 32 + f * 4, x * 32 + 32, y * 32 + f * 4 + 32);
+          end;
+    //upper line
+    for x := 1 to 8 do
+    begin
+      if (FLauk[x][0] = 1) then
+        //Form1.Canvas.CopyRect(Rect(x*32,32,x*32+32,32+f*2), Bmps[Uplauk[x]].Canvas, Rect(0, 0, 32, f*2));
+        CopyCanvas(GCanvas[UpLauk[x]], Form1.Canvas, 0, 32 - f * 4, 32, 32, x *
+          32, 32, x * 32 + 32, 32 + f * 4);
+    end;
+    Sleep(10);
+  end;
+  for y := 8 downto 2 do
+    for x := 1 to 8 do
+      if (Lauk[x][y] < 1) then
+      begin
+        Lauk[x][y] := Lauk[x][y - 1];
+        Lauk[x][y - 1] := 0;
+      end;
+  for x := 1 to 8 do
+    if (Lauk[x][1] < 1) then
+      Lauk[x][1] := UpLauk[x];
+end;
+
+procedure NewGame;
+begin
+  InitializeLauk;
+  SelX := -1;
+  SelY := -1;
+  repeat
+    DeleteLines(0);
+    while (CanDropLines) do
+      DropLine;
+  until (not FullLines);
+  SetArrayLength(Scores, 0);
+  DrawLauk(1, 1, 8, 8);
+  Score := 0;
+end;
+
+procedure SafeNewGame;
+var
+  V: TVariantArray;
+begin
+  setarraylength(V, 0);
+  ThreadSafeCall('NewGame', V);
+end;
+
+procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  Base: Integer;
+begin
+  X := X div 32;
+  Y := Y div 32;
+  if (X >= 1) and (X <= 8) and (Y >= 1) and (Y <= 8) then
+    if (CanSwap(SelX, SelY, X, Y)) then
+    begin
+      Swap(SelX, SelY, X, Y);
+      if (not FullLines) then
+      begin
+        //Swap back
+        Swap(SelX, SelY, X, Y);
+        SelX := -1;
+        SelY := -1;
+      end else
+      begin
+        SelX := -1;
+        SelY := -1;
+        Base := 0;
+        SetArrayLength(Scores, 0);
+        repeat
+          Score := Score + DeleteLines(Base);
+          DrawLauk(1, 1, 8, 8);
+          Sleep(200);
+          Base := Base + 1;
+          while (CanDropLines) do
+            DropLine;
+        until (not FullLines);
+        Timer1.Enabled := True;
+      end;
+      DrawLauk(1, 1, 8, 8);
+    end else
+      if (X = SelX) and (Y = SelY) then
+      begin
+        SelX := -1;
+        SelY := -1;
+        DrawLauk(1, 1, 8, 8);
+      end else
+      begin
+        SelX := X;
+        SelY := Y;
+        DrawLauk(1, 1, 8, 8);
+      end;
+  if (not HaveMoves) then
+    if (GetApplication.MessageBox('You lost! Score: ' + IntToStr(Score * 10) + #13#10 +
+      'Play Again?', 'Game Over', 4) = 6) then
+    begin
+      NewGame;
+      DrawLauk(1, 1, 8, 8);
+    end;
+end;
+
+procedure Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+  SetArrayLength(Scores, 0);
+  DrawLauk(1, 1, 8, 8);
+end;
+
+procedure CreateBitmaps;
+begin
+  Bmps[1] := TSCARBitmap.Create('deNq11r1OwlAYgOEOILVo2wQK/ZP2FAZTHYwCVRMmBxM' +
+    '3g64ykTi5mLhzBSzsvQXuwITZa+AWCFfweciJx6Y/p6W0Xxpy0jTP26Ytqc3Z3L7jui5X2lx' +
+    'e1Hpd2TTNMnDLquHf4ZBDtlh4AuO+b+HFZlN8guAAN3gNUHCC4tQvMBHEg34hiRAe8g9MDAb' +
+    'V+dwM4lGfJq6v6nslRqPqZNII4bE+TdwOhIyJJDzJ3yvBwBl+xgQbZ/vBhK6pOfBUnya8Pq9' +
+    'rbSb+CPAG8AHwBfAJ8A7wCjBK9WMT93ciDfE873nedDpdLBar1Wq73a7X6+VyOZvNxuNxr9f' +
+    'L+ATWBc5BJySB74ggCL4fPA0FYAjwBPAC8AzwAIAAjnfn/5Oybb65vsspzSNJPNXUFsnFJWK' +
+    '2VP8PrxHcOjPoFWVJsH2CtxReEsUQnjHB8Ckuy7KmtqN4lkSSH8QNw7A6rLeYkYj1QzhCKPX' +
+    'pwglJ4qOJqJ8DJ4OQrmvVUCLk58bJdB0zlAj6B+KxCeoXgkcTxC8QJ+Ps7kUFJ3bfP/+4hPf' +
+    'atlXIJxCy2rpawYvgf0vSS5Q74Z5XSsLJGLqqNBsl4WRsy3RQJ/vxv1wRmp4=');
+  Bmps[2] := TSCARBitmap.Create('deNrtlj1PwlAUhg8WqUUDEkEKtPIl8hkbBxIY0H8ghF1' +
+    'hgziUFScYCYkbm0H3/gFWBxMTZ2cSR2MwbsYYicdeJbVyGwziIidvmtub5nlPz2lvTgACoA3' +
+    '3uhOmjmAwOHY/GY/gdZfnLwAGdGEMs9mxagiCVX1AEAQdfDsVY5iFs0JhUK8bW9D4JZfLD9A' +
+    'GKAEwDBOJREbwHSnJcUtyJvPabKLQIh+LdSbmP6TTBH4OoKjaA2BZNpVKEf6q3YZAAn+Xogx' +
+    '7veNisTMBH+GS1ZrQwBV1jXY2m02SJExeWyhRFLvdbr/fL5fL0/caaVh5XLzI8odqtWq1+tR' +
+    'qPWYytPpcUYRxoxFptJ4vy3g7YFmD/v4C3/D7mfPn/D/mzyiQn1CPZV0at3RhXLrdY6U7mgg' +
+    '/uhWa8+f8f8sPBTdm+v/Go2GLZfEA4PmrcOdIMxKMNHZ+OIzHtSfYfaUiOZ0cx5FBy+8XTSb' +
+    'T6Sf5jg5XKPMPWuyHQoglfLQzmxme5zfDYfIiuMbrtQrHwjUocIUyv6FF3uHAnNHiJJfDbJ1' +
+    'rDlHwaGtlt9v9KrxNhyuG8ydOcWhBBjafl//eDrSYvqcry1avx23Q8R+Fz+dFmk5a4Buy7ai' +
+    'D');
+  Bmps[3] := TSCARBitmap.Create('deNrtljFr20AUx5+ISetGsuzYiiVLxUaKHQIBDx6Cpn4' +
+    'BLw4kIZNIqJUh4KGTh0IhUzcFOnVxcYZCyWoMhUJL5kJpl5ApHyGDP8Dl9CTZkX22LpRCBz/' +
+    '+gw33fn/dvePdq0AFmJHJZOCJsWmWOVdalgUygA3wkVt5EJ4JSmGdC+4A/AJIA3h88DcAq0C' +
+    'zhEKCRQgnqLqfwsWnO90BcEOLDaWQDKf6BGBwwD1MPkK+6/9IraVKWjEBTnUPtArSuaReqlJ' +
+    'Pmss/ANAieKC9aQsGHLXV3Wp1W8c/jltfW9tftudVFl7F+ZGFWlRie5BxJdU7X/nP+f3Bvvf' +
+    'Bu7q9uvhzcfjtUOkrjMrSaGJWA6ugoTAEQdBLqqbh/58A36Ms/AbztXn2/mwwGIxGo+Fw2Ol' +
+    '0qtUq+1pQQA35Nno1o10A0FOa8OMq/S45d06v17sm133SPyEnBjFmz9APd44W8ql2b3bb7Xa' +
+    'XdE/JqU1sBvzv+FSmadZJ3SKWQIR/wfeDLNSSv+Qv+f8DP94//TbY4BsIxv2zEfVPZ4YP+KD' +
+    'XUOM1B+HDPfcLm5hIU8pR5xdRK2H/D/i5XI49jdiY6y6UiPBGXHQ2eAGSuBa8krXqZi6bnbb' +
+    'wcEd7SXwbLRhwUVOLj6evrJyJWTj4trpJcjB/Jwan45+u67MDXszCYD3cTNEz3JjARVGchQd' +
+    'RfqmHFm+TKjtV5ZUJfHJhFlikOSo7VeVUMnxskU4/f+r8LMsyDzyIStmgV4tPqhEFE/UAJoX' +
+    'LKg==');
+  Bmps[4] := TSCARBitmap.Create('deNrtlk1oE0EYhidZ09gk3WZNk92ku03b2LTJltbgpS2' +
+    'KClZtsR4Ek4s/aEFBPWghIIiIDYIIIoQIVi8FvWjRQG9qLeihB0mPitBrLkaLP+Ddd5y4TJL' +
+    'dNK315vASZifL885+M98300k6ybqazyeFO9rJP2ihoCwIdnTEraSpybGJLr3RbgD1Tlt+2oH' +
+    'HlRskPUrH3W5Xz/auvyEP9Pd5W0XRRTKnhdJzJ4TB0m2qwhUyphObzeb1tm6AnBjUERB0Uvv' +
+    'sK4+aGJznM+XPET1IBEFQVbVxeFdYRUBGdNviHYdBNuUzZSboojidzjXJeqynxePW/CR7cUs' +
+    'VuQ4fwqKc3UUJoihaBUQOtKGTTgl8QHhhnL4wam7BFmWkmy6KLMs8XFOD2HsISOG+ORnCEmO' +
+    'hxwaJrhJNopG3csFfeAGLEg6HAY/1RqiFn2D7mZIxjs2p+Uh+ipRmqDJJIjbT/YMJm1pkk39' +
+    'mrmnYhPSrTyqiW2CRRxxWFxLflo4WXx06M+EDKn24TDa0cpekhumy8uGCHR4xqIjk6kHKx75' +
+    'i/NLCDiib7tAjzfHejicPLr9/N/dw5t61C+OFm9VwQ/giFi5MOLWTAndHSO4YWZqiquUzvZ4' +
+    'dn3+aLRaLnz6+/L54wgpuKPM7GskEeTZZJtfnf36z98eH67lc7ufy9Nf5PWvyITSeXJ8PfXm' +
+    '7f2hoaHVuoBH4BvgQHZwh//mm/MLjeON85ALai/MN8UFOHdhGU08iyNnsqTXISD0kIBLK4yS' +
+    'TwxUuVXyDjExhiY+ssXIxyAm1nFD4RZ934flV5KpiwrvUknnxLoxfrm+SZbGqcrEi87p1hFo' +
+    'wPn4lyYtyyspIHQsIbfZ4PTIig5kDjoIvii3toSArpKjVkiTBBQdEndpuug9NyC0eRfbjWOm' +
+    'PRysOGk3DAYcDyMrFim+QcbziHAQ5HuuxOoURNCuXWj7qPDan3U7JAX9be0jBfamRWwTvsnj' +
+    'JhM/IeMHtal4XudbF2LqMb5A9HsRZ3hi54vIZCrlcLtZnZDwGAgGsVyzWtym30Gg0qigKvgV' +
+    'zBhnfhZFNv0WDGYlE1kX+BXdn8J8=');
+  Bmps[5] := TSCARBitmap.Create('deNq1ll9IU2EYxt9tts1tntNpO2fHOT3743RTcgNhRQw' +
+    'HgdCN2oURSCJBdDNrglJBglFIgRdiEAUxvCgpIvBGCOrCS4mCrhNFK4goSAiiLoL10Cen47d' +
+    '5anMeXg47O9/5fd/7vM/3J0QhquhSVTUWi9H+XLIs4+4gMRgM7gffTSLufTRvsVji8Xht4Ta' +
+    'b7Sot4sckFXtoCo+pVKpWcIfDMURTS1RkfEQbDTidzprAJUk6TFnAjfwJ2hJJ83q9NZH9MW1' +
+    'xfMQ5eoPHSDi0R9lv0jKDc3xEL83abNaORJWOFQShn/I6vJSP0Cjb4HFXx1dI05XZjT9KG5g' +
+    'RgUb/HpXR+ags10UVKmGqHqUBDo7uYBg/JTk+U0kQPBV5pkAbRjiEynRnF9Iv4geSXTTC8eE' +
+    'lTOqQFvzPsrLZZIzT3ecLuUdrHcXXga0mm3aKFrku0Gl9vbNSw7MY896dvTG3een7arCIuON' +
+    'dRE1RWa7Q+FZraap08Ohr4uLlD8++bPYWGR8x4sljieBSSFP+nynAk5wyuSPXV1+tf733F45' +
+    'gKg3TspEPayGv5mCjyeDHaN4IR5XnZm7/WPu1kd3BR9yS5rEEcSlgaTVJAcpzg89nptdX3n2' +
+    'e5uEskAK2gzJVaC5TBXi7VPnx8fGPD7+tJcrzkQKcX2qksnMBBuY8fyVcWLj29P3J8nAWDRb' +
+    'eSCgKpnNrRDPCQyGtdMKeOZZbGlwxgTMjQXMuBdTF71d2KO92cZWFOJ2dnavNRXP+A3m5dMW' +
+    'AUT0eXiLjnMJvpIPcLwhTCEDKkvEK48e3XApYLrA86mQ41igOqgwjtVDfCXqeokmECkDpWYh' +
+    '68CpNM8fpySHqgibGRQOPirItETYIJg7umF9oDPJZ+llRZOi+nUTYiU06SCSKou4ckLGJe0h' +
+    'Ds0rJegzRJ2SEXmBRbArsgNHeFsEdf+IVGlQN12OQ3rbSMBs27jCqw2HXJYWe/fSyusGjEB0' +
+    '0ChEYzW7fxjYF1EZVUWSfJIlul6uurg5/ohm6Q3tW4t0CNtCrb7VaoQlkV/9cxmMqdk8IFQm' +
+    '3oC9s1n7FJ8te6aAoCg1Yr0zC5arHAczn8wEYCATA1DTNfIlOdiUS7VF0h/0Oge5MQ41Goya' +
+    'H9t8qB7it');
+  Bmps[6] := TSCARBitmap.Create('deNrNlk9o02AYxrN2TbuuTZY1aW3amm6ZrdvqAjIUnKx' +
+    'M/IuyDkRlTC16kA3EehDHQDbcsNsYY6iICroePIgI9qAH8WB1IMIEd9hFZFDwMC/Cjl6E+tR' +
+    'g+EyarqsTfHkpTZv+3u97v+d90jAVpkpGA8tQGwyB52OxWCV3ejzcmWuZO+8LyAtTWV9Ayq0' +
+    'UjPn4TR4377v17dCDH0hxz1mO4yKRSOVwZEd3InlprCQfqeyOR0/NqvxKSujgM6/W8CHWacY' +
+    'fns64Q4rGL19CB0fiUm5VzODI5x+LC+ieWlm3hBGO7Dp4fGTyfhk+smt/Qu4dJfnGEiXhD3O' +
+    'r6XT689fvH76U40/czTo8ko6vlmAYBiVao3JNTY2xXf39/YuLiwsLC319fVRVAWwwGFQ6Wt2' +
+    'uerE9PvSsQObk68L1ifTb5dUXnwpPlk0zeXWuvj0RmSmQKY+vWRwsz/OSJKFQWAparZauc3O' +
+    '6EjuPDg6kbpSBI6Wo4juZ0fFR0W63Y/HE9DXSTvb8ozWS33Mxg5+Xgc+/K+oHqyXhYjKLzvj' +
+    '9fl27HHZ7eFeC5KMcPgfEjD80kbGLirEzEI/aGTKkUAB1e8dzZAlPWLlyM2vGjyeSngNjJL9' +
+    'hb4qmabIzZDCMyy1IZJd2HEsBYsZ3utmtl5c0eHAwB4jP5zNTVDTSTNM2MDU+tiOIUkn46Hy' +
+    'ulpPIzuASmg+FQmVEK/qL1U/MLmklcO7TT5eM/COnU0xnUuOjUTabLRAIrDsXGAe0XePj0CH' +
+    'yksqEVFQ4ulQUoSDIsrwuf1tLEzkOUGlbZ1wHv/0yTyoTKnK5XOU78+fDqDgOA/fy4OPVqFI' +
+    'os645rsKF3jmLxSL6t1RuHbG2SL3TqZmGUaWdPQlgAW8ayUPwjVxDWNq6IXeCaWAcDg9nS6o' +
+    'UN4AMPnZRV+dQVbHR8DRyqmnoVIq9qMqE86AzPi9fncHCurVxIFUKZWJOVSvAP41Q0E9VG/i' +
+    'tahqkSrEXKPOXSdLVdcY4DpArzhRw7ALLBh9feQWe+uvYHm2x2WqjPUm8Vx8oOFP0n2XcwYB' +
+    'IbUZofoiTxaxh/bACM5OsLjCeeIVK1Uuv10ttdlit1t82zlD/INQ1o0olJlldsCwLk6T+p/g' +
+    'JgxQ8eA==');
+  Bmps[7] := TSCARBitmap.Create('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');
+end;
+
+procedure CreateMainForm;
+begin
+  Form1.Width := 325;
+  Form1.Height := 355;
+  Form1.Position := poScreenCenter;
+  Form1.BorderStyle := bsDialog;
+  Form1.Caption := 'SCAR Bejeweled 0.5';
+  Form1.OnMouseDown := @FormMouseDown;
+  Form1.OnPaint := @FormPaint;
+  Timer1 := TTimer.Create(Form1);
+  Timer1.OnTimer := @Timer1Timer;
+end;
+
+procedure SafeCreateMainForm;
+var
+  V: TVariantArray;
+begin
+  setarraylength(V, 0);
+  ThreadSafeCall('CreateMainForm', V);
+end;
+
+procedure ShowFormModal;
+begin
+  Form1.ShowModal;
+end;
+
+procedure SafeShowFormModal;
+var
+  V: TVariantArray;
+begin
+  setarraylength(V, 0);
+  ThreadSafeCall('ShowFormModal', V);
+end;
+
+procedure InitTempBMP;
+begin
+  TempBMP := TSCARBitmap.Create('');
+  TempBMP.SetSize(Form1.Width, Form1.Height);
+end;
+
+procedure SafeInitTempBMP;
+var
+  V: TVariantArray;
+begin
+  setarraylength(V, 0);
+  ThreadSafeCall('InitTempBMP', V);
+end;
+
+begin
+  GetSelf.WindowState := wsMinimized;
+
+  Form1 := CreateForm;
+  SafeCreateMainForm;
+
+  LengthScores[0] := 0;
+  LengthScores[1] := 1;
+  LengthScores[2] := 1;
+  LengthScores[3] := 1;
+  LengthScores[4] := 2;
+  LengthScores[5] := 3;
+  LengthScores[6] := 5;
+  LengthScores[7] := 7;
+  CreateBitmaps;
+  for i := 1 to 7 do
+    GCanvas[i] := Bmps[i].Canvas;
+
+  SafeInitTempBMP;
+  SafeNewGame;
+
+  SafeShowFormModal;
+
+  FreeForm(Form1);
+
+  GetSelf.WindowState := wsNormal; 
+  
+  for i := 1 to 7 do
+    Bmps[i].Free;
+  TempBmp.Free; // Not freed by resource manager, created in main thread
+end.

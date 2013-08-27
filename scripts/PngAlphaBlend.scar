@@ -1,0 +1,20 @@
+var
+  Bmp, Target: TSCARBitmap;  
+  X, Y: Integer;
+begin                 
+  Bmp := TSCARBitmap.Create('');
+  Target := TSCARBitmap.Create('');
+  try
+    Bmp.LoadFromPng(ScriptPath + 'TestPng.png');
+    Target.SetSize(Bmp.Width * 3, Bmp.Height * 3);      
+    Target.Clear(clBlueViolet);
+    Bmp.AlphaBlend := True;  
+    for Y := 0 to 2 do
+      for X := 0 to 2 do
+        Bmp.DrawTo(Target, Bmp.Width * X, Bmp.Height * Y);   
+    DebugBitmap(Target);
+  finally
+    Bmp.Free;
+    Target.Free;
+  end;
+end.

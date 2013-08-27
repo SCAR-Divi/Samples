@@ -1,0 +1,13 @@
+var
+  Bmp: TSCARBitmap;
+begin   
+  Bmp := TSCARBitmap.Create('');
+  try
+    Bmp.LoadFromBmp(ScriptPath + 'TestBmp.bmp');      
+    Bmp.AlphaBlend := True;
+    Bmp.TranspColor := clFuchsia;
+    Bmp.SaveToPng(ScriptPath + 'TransparantBmp.png');
+  finally
+    Bmp.Free;
+  end;
+end.

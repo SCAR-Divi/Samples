@@ -1,0 +1,17 @@
+var
+  Bmp, Mask: TSCARBitmap;  
+  X, Y: Integer;
+begin                 
+  Bmp := TSCARBitmap.Create('');
+  try
+    Bmp.LoadFromPng(ScriptPath + 'TestPng.png');
+    Mask := Bmp.GetAlphaMask;
+    try    
+      DebugBitmap(Mask); 
+    finally
+      Mask.Free;
+    end;
+  finally
+    Bmp.Free;
+  end;
+end.

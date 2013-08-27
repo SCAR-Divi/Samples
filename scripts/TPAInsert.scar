@@ -1,0 +1,11 @@
+var
+  TIA: TIntArray;
+
+begin
+  ClearDebug;
+  TIA := [4, 3, 2, 1];
+  TIAInsert(TIA, 0, 8);
+  WriteLn(TIAToStr(TIA));
+  WriteLn(TIAPop(TIA));
+  WriteLn(TIAToStr(TIA));  
+end.

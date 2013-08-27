@@ -1,0 +1,19 @@
+var
+  Bmp: TSCARBitmap;   
+  TPA: TPointArray;
+
+begin
+  Bmp := TSCARBitmap.Create('');
+  try
+    Bmp.SetSize(500, 500);
+    Bmp.Clear(clGreen); 
+    TPA := TPAFromBox(Box(100, 50, 300, 74));
+    Bmp.SetPixels(TPA, clRed);
+    DebugBitmap(Bmp);                                
+    Wait(500);
+    ReplaceColors(Bmp, [clRed, clGreen], clYellow);
+    DebugBitmap(Bmp); 
+  finally
+    Bmp.Free;
+  end;
+end.

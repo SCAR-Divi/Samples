@@ -1,0 +1,14 @@
+var
+  Client: TSCARWebClient;
+ 
+begin
+  Client := TSCARWebClient.Create(1280, 720);           
+  SetClient(Client).Free;
+  Client.Navigate('http://www.scar-divi.com/');   
+  while Client.Loading do
+    Wait(50);  
+  Wait(1000); 
+  MoveMouse(803, 51);
+  ClickMouseEx(803, 51, mbLeft, 20);      
+  Wait(5000);
+end.

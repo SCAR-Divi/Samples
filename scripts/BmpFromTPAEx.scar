@@ -1,0 +1,31 @@
+// This example draws a random TPA, scaled at 0.25 times it's size onto a 
+// bitmap with an x and y axis at the 0 coordinates for each dimension. After
+// drawing, the bitmap is drawn to a solid yellow bitmap using alphablending
+// which is enabled by default on the TPA bitmap's background.
+
+var
+  T: Cardinal;
+  TPA: TPointArray; 
+  Bmp1, Bmp2: TSCARBitmap;
+
+begin
+  T := GetSystemTime
+  while (GetSystemTime - T) < 5000 do
+  begin
+    TPA := RandomTPA(100000, 2000, 2000);   
+    OffsetTPA(TPa, -500, -500);  
+    Bmp1 := BmpFromTPAEx(TPA, clGreen, clBlack, clRed, 0.25, [taXAxis, taYAxis]);
+    Bmp2 := TSCARBitmap.Create('');
+    try                 
+      Bmp2.SetSize(Bmp1.Width, Bmp1.Height);
+      Bmp2.Clear(clYellow);
+      Bmp1.AlphaBlend := True;
+      Bmp1.DrawTo(Bmp2, 0, 0);
+      DebugBitmap(Bmp2); 
+    finally
+      Bmp1.Free;
+      Bmp2.Free;
+    end;
+    Wait(25);
+  end;
+end.

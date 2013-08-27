@@ -1,0 +1,10 @@
+var
+  ATPA: T2DPointArray;
+  Idx, Len: Integer;
+  
+begin
+  ATPA := PermuteTPA([Point(0, 0), Point(1, 1), Point(2, 2)]);
+  Len := Length(ATPA);
+  for Idx := 0 to Len - 1 do
+    WriteLn(TPAToStr(ATPA[Idx]));
+end.
