@@ -20,7 +20,7 @@ interface
 uses
   Vcl.Graphics, WinApi.Windows,
 
-  LibAPI.Types;
+  LibAPI.Types, OpenAPI.Globals;
 
 function SCAR_Version: Integer;
 procedure SCAR_DebugLn(const Str: WideString); overload;
@@ -51,11 +51,13 @@ type
 
     procedure SetSize(const NewWidth, NewHeight: Integer);
     procedure Resize(const NewWidth, NewHeight: Integer);
+    procedure ResizeEx(const NewWidth, NewHeight: Integer; const Resampler: TBmpResampler);
 
     function Clone: TSCARBitmapWrapper;
     procedure Assign(const Obj: TObject);
     procedure AssignTo(const Obj: TObject);
     procedure Clear(const Color: Integer);
+    procedure ClearEx(const Color: Integer; const Alpha: Byte);
 
     function LoadFromBmp(const Path: WideString): Boolean; overload;
     function LoadFromBmp(const Path: AnsiString): Boolean; overload;
@@ -78,6 +80,8 @@ type
     procedure RotateEx(const Angle: Extended; const Resize: Boolean);
     procedure Skew(const Horiz, Vert: Single);
     procedure SkewEx(const Horiz, Vert: Single; const Resize: Boolean);
+    procedure Invert;
+    procedure Crop(const X1, Y1, X2, Y2: Integer);
 
     procedure SetAlphaMask(const Mask: TSCARBitmapWrapper); overload;
     procedure SetAlphaMask(const Mask: Pointer); overload;
@@ -215,10 +219,16 @@ begin
     Exp^.TSCARBitmap_Clear(FBmpObj, Color);
 end;
 
+procedure TSCARBitmapWrapper.ClearEx(const Color: Integer; const Alpha: Byte);
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_ClearEx <> nil) then
+    Exp^.TSCARBitmap_ClearEx(FBmpObj, Color, Alpha);
+end;
+
 function TSCARBitmapWrapper.Clone: TSCARBitmapWrapper;
 begin
   Result := nil;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Clear <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Clone <> nil) then
     Result := TSCARBitmapWrapper.Create(Exp^.TSCARBitmap_Clone(FBmpObj));
 end;
 
@@ -227,6 +237,12 @@ begin
   FOwnsObject := False;
   if (Exp <> nil) and (@Exp^.TSCARBitmap_Create <> nil) then
     FBmpObj := Exp^.TSCARBitmap_Create;
+end;
+
+procedure TSCARBitmapWrapper.Crop(const X1, Y1, X2, Y2: Integer);
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Crop <> nil) then
+    Exp^.TSCARBitmap_Crop(FBmpObj, X1, Y1, X2, Y2);
 end;
 
 constructor TSCARBitmapWrapper.Create(const BmpObj: Pointer);
@@ -274,42 +290,42 @@ end;
 function TSCARBitmapWrapper.GetAlphaBlend: Boolean;
 begin
   Result := False;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetAlphaBlend <> nil) then
     Result := Exp^.TSCARBitmap_GetAlphaBlend(FBmpObj);
 end;
 
 function TSCARBitmapWrapper.GetAlphaMask: TSCARBitmapWrapper;
 begin
   Result := nil;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetAlphaMask <> nil) then
     Result := TSCARBitmapWrapper.Create(Exp^.TSCARBitmap_GetAlphaMask(FBmpObj));
 end;
 
 function TSCARBitmapWrapper.GetBits: PSCARBmpDataArray;
 begin
   Result := nil;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetBits <> nil) then
     Result := Exp^.TSCARBitmap_GetBits(FBmpObj);
 end;
 
 function TSCARBitmapWrapper.GetCanvas: TCanvas;
 begin
   Result := nil;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetCanvas <> nil) then
     Result := Exp^.TSCARBitmap_GetCanvas(FBmpObj);
 end;
 
 function TSCARBitmapWrapper.GetDC: HDC;
 begin
   Result := 0;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetDC <> nil) then
     Result := Exp^.TSCARBitmap_GetDC(FBmpObj);
 end;
 
 function TSCARBitmapWrapper.GetHeight: Integer;
 begin
   Result := 0;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetHeight <> nil) then
     Result := Exp^.TSCARBitmap_GetHeight(FBmpObj);
 end;
 
@@ -323,15 +339,21 @@ end;
 function TSCARBitmapWrapper.GetTranspColor: Integer;
 begin
   Result := 0;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetTranspColor <> nil) then
     Result := Exp^.TSCARBitmap_GetTranspColor(FBmpObj);
 end;
 
 function TSCARBitmapWrapper.GetWidth: Integer;
 begin
   Result := 0;
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_GetWidth <> nil) then
     Result := Exp^.TSCARBitmap_GetWidth(FBmpObj);
+end;
+
+procedure TSCARBitmapWrapper.Invert;
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Invert <> nil) then
+    Exp^.TSCARBitmap_Invert(FBmpObj);
 end;
 
 function TSCARBitmapWrapper.LoadFromBmp(const Path: AnsiString): Boolean;
@@ -388,6 +410,12 @@ begin
     Exp^.TSCARBitmap_Resize(FBmpObj, NewWidth, NewHeight);
 end;
 
+procedure TSCARBitmapWrapper.ResizeEx(const NewWidth, NewHeight: Integer; const Resampler: TBmpResampler);
+begin
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_ResizeEx <> nil) then
+    Exp^.TSCARBitmap_ResizeEx(FBmpObj, NewWidth, NewHeight, Resampler);
+end;
+
 procedure TSCARBitmapWrapper.Rotate(const Angle: Extended);
 begin
   if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Clear <> nil) then
@@ -439,7 +467,7 @@ function TSCARBitmapWrapper.SaveToStr: AnsiString;
 var
   Res: PAnsiChar;
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SaveToPngA <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SaveToStr <> nil) then
   begin
     Exp^.TSCARBitmap_SaveToStr(FBmpObj, Res);
     SetLength(Result, StrLen(Res));
@@ -462,7 +490,7 @@ end;
 
 procedure TSCARBitmapWrapper.SetAlphaBlend(const Value: Boolean);
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SetAlphaBlend <> nil) then
     Exp^.TSCARBitmap_SetAlphaBlend(FBmpObj, Value);
 end;
 
@@ -474,31 +502,31 @@ end;
 
 procedure TSCARBitmapWrapper.SetHeight(const Value: Integer);
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SetHeight <> nil) then
     Exp^.TSCARBitmap_SetHeight(FBmpObj, Value);
 end;
 
 procedure TSCARBitmapWrapper.SetPixels(const X, Y, Value: Integer);
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SetPixels <> nil) then
     Exp^.TSCARBitmap_SetPixels(FBmpObj, X, Y, Value);
 end;
 
 procedure TSCARBitmapWrapper.SetSize(const NewWidth, NewHeight: Integer);
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Clear <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SetSize <> nil) then
     Exp^.TSCARBitmap_SetSize(FBmpObj, NewWidth, NewHeight);
 end;
 
 procedure TSCARBitmapWrapper.SetTranspColor(const Value: Integer);
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SetTranspColor <> nil) then
     Exp^.TSCARBitmap_SetTranspColor(FBmpObj, Value);
 end;
 
 procedure TSCARBitmapWrapper.SetWidth(const Value: Integer);
 begin
-  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_Flip <> nil) then
+  if (FBmpObj <> nil) and (Exp <> nil) and (@Exp^.TSCARBitmap_SetWidth <> nil) then
     Exp^.TSCARBitmap_SetWidth(FBmpObj, Value);
 end;
 

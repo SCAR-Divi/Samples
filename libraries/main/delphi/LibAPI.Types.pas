@@ -16,7 +16,7 @@ interface
 uses
   WinApi.Windows, Vcl.Controls, Vcl.Graphics,
 
-  OpenAPI.Globals;
+  OpenAPI.Types, OpenAPI.Globals;
 
 type
   TCallConv = (ccRegister, ccPascal, ccCdecl, ccStdCall, ccSafeCall);
@@ -42,6 +42,8 @@ type
 
   PSCARBmpDataArray = ^TSCARBmpDataArray;
   TSCARBmpDataArray = array[0..0] of TSCARBmpData;
+
+  TBmpResampler = (brNearest, brBilinear, brBicubic, brSuperSample);
 
   PLibClientCallbacks = ^TLibClientCallbacks;
   TLibClientCallbacks = record
@@ -149,6 +151,10 @@ type
     TSCARBitmap_SkewEx: procedure(const Bmp: Pointer; const Horiz, Vert: Single; const Resize: Boolean); stdcall;
     // 3.38
     TSCARBitmap_Invert: procedure(const Bmp: Pointer); stdcall;
+    // 3.40
+    TSCARBitmap_Crop: procedure(const Bmp: Pointer; const X1, Y1, X2, Y2: Integer); stdcall;
+    TSCARBitmap_ClearEx: procedure(const Bmp: Pointer; const Color: Integer; const Alpha: Byte); stdcall;
+    TSCARBitmap_ResizeEx: procedure(const Bmp: Pointer; const NewWidth, NewHeight: Integer; const Resampler: TBmpResampler); stdcall;
   end;
 
 implementation
