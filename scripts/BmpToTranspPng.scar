@@ -4,9 +4,9 @@ begin
   Bmp := TSCARBitmap.Create('');
   try
     Bmp.LoadFromBmp(ScriptPath + 'TestBmp.bmp');      
-    Bmp.AlphaBlend := True;
-    Bmp.TranspColor := clFuchsia;
-    Bmp.SaveToPng(ScriptPath + 'TransparantBmp.png');
+    Bmp.ClearAlpha;
+    Bmp.SetAlpha(clFuchsia, 0);
+    Bmp.SaveToPng(ScriptPath + 'TransparentBmp.png');
   finally
     Bmp.Free;
   end;

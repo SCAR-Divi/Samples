@@ -23,13 +23,13 @@ begin
       begin 
         // Draw box
         for XX := X to X + Bmp.Width - 1 do
-          Target.Pixels[XX, Y] := clBlue;  
+          Target.Pixel[XX, Y] := clBlue;  
         for XX := X to X + Bmp.Width - 1 do
-          Target.Pixels[XX, Y + Bmp.Height - 1] := clBlue;
+          Target.Pixel[XX, Y + Bmp.Height - 1] := clBlue;
         for YY := Y to Y + Bmp.Height - 1 do
-          Target.Pixels[X, YY] := clBlue;
+          Target.Pixel[X, YY] := clBlue;
         for YY := Y to Y + Bmp.Height - 1 do
-          Target.Pixels[X + Bmp.Width - 1, YY] := clBlue;
+          Target.Pixel[X + Bmp.Width - 1, YY] := clBlue;
         DebugBitmap(Target);
       end;    
       Wait(500);

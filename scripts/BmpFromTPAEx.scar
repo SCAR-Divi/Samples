@@ -19,8 +19,7 @@ begin
     try                 
       Bmp2.SetSize(Bmp1.Width, Bmp1.Height);
       Bmp2.Clear(clYellow);
-      Bmp1.AlphaBlend := True;
-      Bmp1.DrawTo(Bmp2, 0, 0);
+      Bmp1.DrawTo(Bmp2, 0, 0, True);
       DebugBitmap(Bmp2); 
     finally
       Bmp1.Free;
