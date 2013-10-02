@@ -1,0 +1,41 @@
+var
+  Bmp, Target: TSCARBitmap;
+  X, Y, XX, YY, Loop: Integer;
+begin                 
+  Bmp := TSCARBitmap.Create('');
+  Target := TSCARBitmap.Create('');
+  try             
+    // Setup bitmaps             
+    Bmp.LoadFromBmp(ScriptPath + 'TestBmp.bmp');
+    Target.SetSize(Bmp.Width * 20, Bmp.Height * 20);  
+    for Loop := 1 to 10 do
+    begin  
+      Target.Clear(clFuchsia);    
+      Bmp.ClearAlpha;
+      Bmp.SetAlpha(clFuchsia, 0);
+      Bmp.DrawTo(Target, Bmp.Width * Random(20), Bmp.Height * Random(20), False);  
+      FloodFill(Target, 0, 0, clYellow);
+      DebugBitmap(Target); 
+      Wait(500);
+      // Find bitmap      
+      SetClient(TSCARBitmapClient.Create(Target)).Free;
+      if FindBitmap(X, Y, Bmp, 0, 0, Target.Width - 1, Target.Height - 1) then  
+      begin 
+        // Draw box
+        for XX := X to X + Bmp.Width - 1 do
+          Target.Pixels[XX, Y] := clBlue;  
+        for XX := X to X + Bmp.Width - 1 do
+          Target.Pixels[XX, Y + Bmp.Height - 1] := clBlue;
+        for YY := Y to Y + Bmp.Height - 1 do
+          Target.Pixels[X, YY] := clBlue;
+        for YY := Y to Y + Bmp.Height - 1 do
+          Target.Pixels[X + Bmp.Width - 1, YY] := clBlue;
+        DebugBitmap(Target);
+      end;    
+      Wait(500);
+    end;
+  finally
+    Bmp.Free;
+    Target.Free;
+  end;
+end.
