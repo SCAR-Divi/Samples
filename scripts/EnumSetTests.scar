@@ -1,0 +1,39 @@
+var
+  EnumVar: TFontStyles;   
+  EnumVar2: TFontStyle;  
+  Num: Integer;
+  
+procedure Test(const Name: string; const Success: Boolean);
+begin
+  if Success then
+    WriteLn(Format('Test "%s" was successful', [Name]))
+  else             
+    WriteLn(Format('Test "%s" was failed', [Name]));
+end;
+  
+begin
+  ClearDebug;
+  WriteLn('== Enum Set Tests ==');
+  // Assign            
+  EnumVar := [fsItalic, fsUnderline];  
+  Test('Assign1', fsItalic in EnumVar);       
+  Test('Assign2', fsUnderline in EnumVar);      
+  Test('Assign3', not (fsBold in EnumVar));
+  // Include
+  Include(EnumVar, fsBold);    
+  Test('Include1', fsItalic in EnumVar);       
+  Test('Include2', fsUnderline in EnumVar);      
+  Test('Include3', fsBold in EnumVar);
+  // Exclude   
+  Exclude(EnumVar, fsItalic);    
+  Test('Exclude1', not (fsItalic in EnumVar));       
+  Test('Exclude2', fsUnderline in EnumVar);      
+  Test('Exclude3', fsBold in EnumVar);      
+  // Looping    
+  Num := 0;
+  for EnumVar2 := fsBold to fsUnderline do  
+  begin
+    Test(Format('Loop%d', [Num + 1]), EnumVar2 = TFontStyle(Num));    
+    Inc(Num);
+  end;
+end.

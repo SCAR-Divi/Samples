@@ -1,0 +1,18 @@
+var
+  TPA: TPointArray;  
+  Idx: Integer;  
+  Chrono: TChrono;
+
+begin
+  TPA := [Point(0, 0), Point(2, 2), Point(5, 10)];
+  for Idx := 1 to 21 do
+    TPA := CombineTPA(TPA, TPA); 
+  WriteLn(Format('Array size: %d', [Length(TPA)])); 
+  Chrono := TChrono.Create;
+  Chrono.Mark;
+  TPAUnique(TPA);     
+  Chrono.Mark;             
+  WriteLn(Format('Unique elements: %d', [Length(TPA)]));  
+  WriteLn(Format('Time elapsed: %f', [Chrono.Total])); 
+  Chrono.Free
+end.
