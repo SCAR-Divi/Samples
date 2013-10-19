@@ -50,7 +50,7 @@ begin
     Canvas.Pen.Color := clRed;
     Canvas.Rectangle(x * 32 + 1, y * 32 + 1, x * 32 + 30, y * 32 + 30);
   end;
-  for x := 0 to GetArrayLength(Scores) - 1 do
+  for x := 0 to Length(Scores) - 1 do
   begin
     Canvas.Brush.Style := bsClear;
     Canvas.Font.Size := 14;
@@ -296,10 +296,10 @@ var
   k: Integer;
 begin
   k := DeleteLine(x, y, xv, yv, n);
-  SetArrayLength(Scores, GetArrayLength(Scores) + 1);
-  Scores[GetArrayLength(Scores) - 1].x := x + xv;
-  Scores[GetArrayLength(Scores) - 1].y := y + yv;
-  Scores[GetArrayLength(Scores) - 1].Number := (base + k) * 10;
+  SetLength(Scores, Length(Scores) + 1);
+  Scores[Length(Scores) - 1].x := x + xv;
+  Scores[Length(Scores) - 1].y := y + yv;
+  Scores[Length(Scores) - 1].Number := (base + k) * 10;
   Score := Score + base + k;
   base := base + 1;
 end;
@@ -432,7 +432,7 @@ begin
     while (CanDropLines) do
       DropLine;
   until (not FullLines);
-  SetArrayLength(Scores, 0);
+  SetLength(Scores, 0);
   DrawLauk(1, 1, 8, 8);
   Score := 0;
 end;
@@ -441,7 +441,7 @@ procedure SafeNewGame;
 var
   V: TVariantArray;
 begin
-  setarraylength(V, 0);
+  SetLength(V, 0);
   ThreadSafeCall('NewGame', V);
 end;
 
@@ -467,7 +467,7 @@ begin
         SelX := -1;
         SelY := -1;
         Base := 0;
-        SetArrayLength(Scores, 0);
+        SetLength(Scores, 0);
         repeat
           Score := Score + DeleteLines(Base);
           DrawLauk(1, 1, 8, 8);
@@ -503,7 +503,7 @@ end;
 procedure Timer1Timer(Sender: TObject);
 begin
   Timer1.Enabled := False;
-  SetArrayLength(Scores, 0);
+  SetLength(Scores, 0);
   DrawLauk(1, 1, 8, 8);
 end;
 
@@ -636,7 +636,7 @@ procedure SafeCreateMainForm;
 var
   V: TVariantArray;
 begin
-  setarraylength(V, 0);
+  SetLength(V, 0);
   ThreadSafeCall('CreateMainForm', V);
 end;
 
@@ -649,7 +649,7 @@ procedure SafeShowFormModal;
 var
   V: TVariantArray;
 begin
-  setarraylength(V, 0);
+  SetLength(V, 0);
   ThreadSafeCall('ShowFormModal', V);
 end;
 
@@ -663,7 +663,7 @@ procedure SafeInitTempBMP;
 var
   V: TVariantArray;
 begin
-  setarraylength(V, 0);
+  SetLength(V, 0);
   ThreadSafeCall('InitTempBMP', V);
 end;
 

@@ -1,0 +1,19 @@
+var
+  Bmp, Bmp2, Target: TSCARBitmap; 
+  
+const
+  COLORCOUNT = 16;
+  
+begin                 
+  Bmp := GetClient.CaptureEx(250, 150, 550, 450);
+  Bmp2 := Bmp.Clone;
+  Bmp2.Reduce(COLORCOUNT);
+  Target := TSCARBitmap.Create('');
+  Target.SetSize(Bmp.Width * 2, Bmp.Height);
+  Bmp.DrawTo(Target, 0, 0, False);          
+  Bmp2.DrawTo(Target, Bmp.Width, 0, False);  
+  DebugBitmap(Target);
+  Bmp.Free;
+  Bmp2.Free;
+  Target.Free;
+end.
