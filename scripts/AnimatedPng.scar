@@ -1,0 +1,24 @@
+var
+  Loops, Idx: Integer;
+  File: TPNGFile;   
+  Bmp: TSCARBitmap;
+  
+begin                 
+  File := TPNGFile.Create;
+  try
+    File.LoadFromFile(ScriptPath + 'AnimPng.png');   
+    for Loops := 1 to 5 do
+      for Idx := 0 to File.FrameCount - 1 do
+      begin
+        Bmp := File.ToBitmapEx(Idx);
+        try
+          DebugBitmap(Bmp);
+        finally
+          Bmp.Free;
+        end;   
+        Wait(File.FrameIvals[Idx]);
+      end;        
+  finally
+    File.Free;
+  end;
+end.
