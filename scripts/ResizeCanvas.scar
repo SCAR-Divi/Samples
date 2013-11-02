@@ -1,0 +1,19 @@
+var
+  File: TPNGFile;   
+  Bmp: TSCARBitmap;
+  
+begin                 
+  File := TPNGFile.Create;
+  try
+    File.LoadFromFile(ScriptPath + 'TestPng.png');   
+    Bmp := File.ToBitmap;
+    try                   
+      Bmp.ResizeCanvas(200, 200, raTopRight);
+      DebugBitmap(Bmp);
+    finally
+      Bmp.Free;
+    end;        
+  finally
+    File.Free;
+  end;
+end.
