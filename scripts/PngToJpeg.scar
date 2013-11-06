@@ -1,0 +1,13 @@
+var
+  Bmp: TSCARBitmap;
+begin   
+  Bmp := TSCARBitmap.Create('');
+  try
+    Bmp.LoadFromPng(ScriptPath + 'TestPng.png');      
+    Bmp.ClearAlpha;
+    Bmp.SetAlpha(clFuchsia, 0);
+    Bmp.SaveToJpeg(ScriptPath + 'TestJpeg.jpg', 85);
+  finally
+    Bmp.Free;
+  end;
+end.
