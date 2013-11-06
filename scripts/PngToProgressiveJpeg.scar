@@ -1,0 +1,16 @@
+var
+  Png: TPNGFile;               
+  Jpeg: TJPEGFile;
+begin   
+  Png := TPNGFile.Create; 
+  Jpeg := TJPEGFile.Create;
+  try
+    Png.LoadFromFile(ScriptPath + 'TestPng.png');          
+    Jpeg.Assign(Png);   
+    Jpeg.Progressive := True;
+    Jpeg.SaveToFile(ScriptPath + 'TestJpeg.jpg');
+  finally
+    Png.Free; 
+    Jpeg.Free;
+  end;
+end.
